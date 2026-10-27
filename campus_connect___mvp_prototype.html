@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Connect</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f6f8;
+    color: #0064A4;
+  }
+  header {
+    background: #0064A4;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  header h1 {
+    color: #FFD200;
+    font-size: 2rem;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    color: #ffffff;
+    margin-top: 6px;
+    font-size: 0.95rem;
+  }
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  #controls {
+    margin-bottom: 20px;
+  }
+  #searchInput {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 2px solid #0064A4;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    outline: none;
+    color: #0064A4;
+  }
+  #searchInput::placeholder {
+    color: #8aa9c2;
+  }
+  #categoryFilters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .filter-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid #0064A4;
+    background: #ffffff;
+    color: #0064A4;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .filter-btn:hover {
+    background: #e8f1f8;
+  }
+  .filter-btn.active {
+    background: #0064A4;
+    color: #FFD200;
+    border-color: #0064A4;
+  }
+  #resultsInfo {
+    margin: 14px 0;
+    font-size: 0.95rem;
+    color: #0064A4;
+    font-weight: 600;
+  }
+  #cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #dce5ec;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 6px rgba(0,100,164,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card h3 {
+    font-size: 1.05rem;
+    color: #0064A4;
+    font-weight: 700;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .tag.blue-bg {
+    background: #0064A4;
+    color: #FFD200;
+  }
+  .tag.yellow-bg {
+    background: #FFD200;
+    color: #0064A4;
+  }
+  .card p.desc {
+    font-size: 0.88rem;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4em;
+  }
+  .card .meta-row {
+    font-size: 0.82rem;
+    color: #0064A4;
+  }
+  .card .meta-row strong {
+    color: #0064A4;
+  }
+  .card a.contact-link {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 7px 12px;
+    background: #FFD200;
+    color: #0064A4;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    width: fit-content;
+  }
+  .card a.contact-link:hover {
+    background: #e6bd00;
+  }
+  .via-source {
+    font-size: 0.75rem;
+    color: #8aa9c2;
+    margin-top: 2px;
+  }
+  #emptyState {
+    text-align: center;
+    padding: 40px 20px;
+    color: #0064A4;
+  }
+  #emptyState button {
+    margin-top: 14px;
+    padding: 10px 20px;
+    background: #0064A4;
+    color: #FFD200;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  #emptyState button:hover {
+    background: #004d80;
+  }
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: #0064A4;
+    font-size: 0.85rem;
+    background: #FFD200;
+    margin-top: 30px;
+  }
+  @media (max-width: 600px) {
+    #cardGrid {
+      grid-template-columns: 1fr;
+    }
+    header h1 {
+      font-size: 1.6rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Campus Connect</h1>
+  <p>Find clubs, jobs, housing &amp; more — all in one place.</p>
+</header>
+
+<main>
+  <section id="controls">
+    <input type="text" id="searchInput" placeholder="Search events, jobs, resources...">
+    <div id="categoryFilters">
+      <button class="filter-btn active" data-category="All">All</button>
+      <button class="filter-btn" data-category="Clubs">Clubs</button>
+      <button class="filter-btn" data-category="Jobs">Jobs</button>
+      <button class="filter-btn" data-category="Basic Needs">Basic Needs</button>
+      <button class="filter-btn" data-category="Housing">Housing</button>
+      <button class="filter-btn" data-category="Events">Events</button>
+      <button class="filter-btn" data-category="Career Fairs">Career Fairs</button>
+      <button class="filter-btn" data-category="Health/Wellness">Health/Wellness</button>
+    </div>
+  </section>
+
+  <section id="resultsInfo"></section>
+
+  <section id="cardGrid"></section>
+
+  <div id="emptyState" hidden>
+    <p>No listings match your search. Try different keywords or categories.</p>
+    <button id="clearFiltersBtn">Clear Filters</button>
+  </div>
+</main>
+
+<footer>
+  Campus Connect MVP — Demo Prototype
+</footer>
+
+<script>
+const LISTINGS = [
+  {"id":"1","title":"ASUCI General Club Fair","categories":["Clubs","Events"],"description":"Explore 100+ student organizations, grab free swag, and sign up for clubs that match your interests.","datetime":"Oct 29, 2025, 11:00 AM","location":"Ring Road, Main Campus","contact":"https://asuci.uci.edu/clubfair","source":"Club Website"},
+  {"id":"2","title":"Part-Time Barista — Anteatery Café","categories":["Jobs"],"description":"On-campus café hiring part-time baristas. Flexible shifts, work-study eligible, training provided.","datetime":null,"location":"Anteatery, Student Center","contact":"https://jobs.uci.edu/listing/4821","source":"Career Center"},
+  {"id":"3","title":"FRESH Basic Needs Hub — Free Groceries","categories":["Basic Needs"],"description":"Weekly grocery distribution for students facing food insecurity. No application needed, just bring your student ID.","datetime":"Every Tuesday, 10:00 AM - 2:00 PM","location":"FRESH Basic Needs Hub, G319 Student Center","contact":"fresh@uci.edu","source":"Canvas"},
+  {"id":"4","title":"Subleaser Needed — Studio Near Campus","categories":["Housing"],"description":"Winter quarter sublease available, 5 min walk to campus, furnished studio, utilities included.","datetime":null,"location":"Camino Del Sol Apartments","contact":"subleasestudent@gmail.com","source":"Instagram"},
+  {"id":"5","title":"Fall Career & Internship Fair","categories":["Career Fairs","Jobs"],"description":"Meet recruiters from 80+ companies hiring for internships and full-time roles across all majors.","datetime":"Nov 5, 2025, 10:00 AM - 3:00 PM","location":"Bren Events Center","contact":"https://career.uci.edu/fall-fair","source":"Career Center"},
+  {"id":"6","title":"Mindfulness & Stress Relief Workshop","categories":["Health/Wellness"],"description":"Guided meditation and breathing exercises to help manage midterm stress. Open to all students.","datetime":"Oct 31, 2025, 4:00 PM","location":"Student Health Center, Room 201","contact":"wellness@uci.edu","source":"Student Health Center"},
+  {"id":"7","title":"Computer Science Club Weekly Meeting","categories":["Clubs"],"description":"Weekly meetup for CS students: coding challenges, project showcases, and guest speaker talks.","datetime":"Every Wednesday, 6:00 PM","location":"DBH 1300","contact":"https://csclub.ics.uci.edu","source":"Club Website"},
+  {"id":"8","title":"Campus Food Pantry Volunteer Opportunity","categories":["Basic Needs","Jobs"],"description":"Volunteer hours available for students who want to help stock and distribute food at the pantry.","datetime":null,"location":"FRESH Basic Needs Hub","contact":"fresh-volunteer@uci.edu","source":"Canvas"},
+  {"id":"9","title":"Roommate Wanted — 2BR Apartment","categories":["Housing"],"description":"Looking for a clean, quiet roommate to share a 2-bedroom apartment starting Winter quarter. $900/month.","datetime":null,"location":"University Hills","contact":"roommatewanted@uci.edu","source":"Instagram"},
+  {"id":"10","title":"Free Flu Shot Clinic","categories":["Health/Wellness","Events"],"description":"Free flu vaccinations for all students with valid student ID. Walk-ins welcome, no appointment needed.","datetime":"Nov 3, 2025, 9:00 AM - 1:00 PM","location":"Student Health Center Lobby","contact":"https://shc.uci.edu/flu","source":"Student Health Center"},
+  {"id":"11","title":"Women in STEM Networking Night","categories":["Clubs","Career Fairs"],"description":"Connect with alumnae and industry professionals in STEM fields over dinner and casual networking.","datetime":"Nov 7, 2025, 6:00 PM","location":"Calit2 Auditorium","contact":"https://wistem.uci.edu/networking","source":"Club Website"},
+  {"id":"12","title":"Resident Assistant (RA) Hiring","categories":["Jobs","Housing"],"description":"Housing office hiring RAs for next academic year. Free housing + stipend included. Applications due soon.","datetime":"Applications due Dec 1, 2025","location":"Housing Administration Office","contact":"https://housing.uci.edu/ra-jobs","source":"Canvas"},
+  {"id":"13","title":"Late Night Study Jam & Free Snacks","categories":["Events","Basic Needs"],"description":"Finals prep event with free coffee, snacks, and quiet study space open until 2 AM.","datetime":"Dec 8, 2025, 8:00 PM - 2:00 AM","location":"Langson Library","contact":"https://library.uci.edu/latenight","source":"Instagram"},
+  {"id":"14","title":"Peer Tutoring Program Sign-Up","categories":["Basic Needs","Clubs"],"description":"Free peer tutoring for math, chemistry, and physics courses. Sign up for weekly sessions.","datetime":null,"location":"Learning & Academic Resource Center","contact":"https://larc.sa.uci.edu","source":"Canvas"},
+  {"id":"15","title":"Tech Company Info Session — DataCore Inc.","categories":["Career Fairs","Jobs"],"description":"Info session with Q&A about internship and new-grad software engineering roles. Pizza provided.","datetime":"Nov 12, 2025, 5:30 PM","location":"Engineering Hall 2430","contact":"https://career.uci.edu/datacore-infosession","source":"Career Center"},
+  {"id":"16","title":"Yoga on the Lawn","categories":["Health/Wellness","Events"],"description":"Free weekly outdoor yoga session for all skill levels. Mats provided, just bring water.","datetime":"Every Friday, 3:00 PM","location":"Aldrich Park","contact":"wellness@uci.edu","source":"Instagram"},
+  {"id":"17","title":"Emergency Housing Assistance Program","categories":["Housing","Basic Needs"],"description":"Short-term emergency housing support for students facing unexpected housing insecurity.","datetime":null,"location":"Dean of Students Office","contact":"deanofstudents@uci.edu","source":"Canvas"},
+  {"id":"18","title":"Anteater Entrepreneurship Club Pitch Night","categories":["Clubs","Events"],"description":"Student founders pitch their startups to peers and local investors. Open to all majors, free admission.","datetime":"Nov 14, 2025, 7:00 PM","location":"The Cove, Student Center","contact":"https://aec.uci.edu/pitchnight","source":"Club Website"}
+];
+
+const activeCategories = new Set();
+let searchText = "";
+
+const searchInput = document.getElementById('searchInput');
+const categoryFilters = document.getElementById('categoryFilters');
+const resultsInfo = document.getElementById('resultsInfo');
+const cardGrid = document.getElementById('cardGrid');
+const emptyState = document.getElementById('emptyState');
+const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+
+function isEmail(str) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str);
+}
+
+function getFilteredListings() {
+  return LISTINGS.filter(item => {
+    const text = (item.title + ' ' + item.description).toLowerCase();
+    const matchesSearch = text.includes(searchText.toLowerCase());
+    const matchesCategory = activeCategories.size === 0 ||
+      item.categories.some(cat => activeCategories.has(cat));
+    return matchesSearch && matchesCategory;
+  });
+}
+
+function renderCards(listings) {
+  resultsInfo.textContent = `Showing ${listings.length} of ${LISTINGS.length} listings`;
+
+  if (listings.length === 0) {
+    cardGrid.hidden = true;
+    emptyState.hidden = false;
+    cardGrid.innerHTML = '';
+    return;
+  }
+
+  cardGrid.hidden = false;
+  emptyState.hidden = true;
+
+  cardGrid.innerHTML = listings.map((item, idx) => {
+    const tagsHtml = item.categories.map((cat, i) => {
+      const cls = i % 2 === 0 ? 'blue-bg' : 'yellow-bg';
+      return `<span class="tag ${cls}">${cat}</span>`;
+    }).join('');
+
+    const datetimeRow = item.datetime
+      ? `<div class="meta-row"><strong>When:</strong> ${item.datetime}</div>`
+      : '';
+
+    const contactHref = isEmail(item.contact) ? `mailto:${item.contact}` : item.contact;
+    const contactLabel = isEmail(item.contact) ? 'Email' : 'Visit Link';
+
+    return `
+      <div class="card">
+        <h3>${item.title}</h3>
+        <div class="tags">${tagsHtml}</div>
+        <p class="desc">${item.description}</p>
+        ${datetimeRow}
+        <div class="meta-row"><strong>Where:</strong> ${item.location}</div>
+        <a class="contact-link" href="${contactHref}" target="_blank" rel="noopener noreferrer">${contactLabel}</a>
+        <div class="via-source">via ${item.source}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function render() {
+  const filtered = getFilteredListings();
+  renderCards(filtered);
+}
+
+searchInput.addEventListener('input', (e) => {
+  searchText = e.target.value;
+  render();
+});
+
+categoryFilters.addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+
+  const category = btn.dataset.category;
+
+  if (category === 'All') {
+    activeCategories.clear();
+  } else {
+    if (activeCategories.has(category)) {
+      activeCategories.delete(category);
+    } else {
+      activeCategories.add(category);
+    }
+  }
+
+  updateFilterButtonStates();
+  render();
+});
+
+function updateFilterButtonStates() {
+  const buttons = categoryFilters.querySelectorAll('.filter-btn');
+  buttons.forEach(btn => {
+    const cat = btn.dataset.category;
+    if (cat === 'All') {
+      btn.classList.toggle('active', activeCategories.size === 0);
+    } else {
+      btn.classList.toggle('active', activeCategories.has(cat));
+    }
+  });
+}
+
+clearFiltersBtn.addEventListener('click', () => {
+  searchText = '';
+  searchInput.value = '';
+  activeCategories.clear();
+  updateFilterButtonStates();
+  render();
+});
+
+updateFilterButtonStates();
+render();
+</script>
+
+</body>
+</html>
